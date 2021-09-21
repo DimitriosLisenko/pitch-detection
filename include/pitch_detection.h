@@ -39,6 +39,8 @@ template <typename T>
 T
 yin(const std::vector<T> &, int);
 
+double yin(const double * const, size_t, int);
+
 template <typename T>
 T
 mpm(const std::vector<T> &, int);
