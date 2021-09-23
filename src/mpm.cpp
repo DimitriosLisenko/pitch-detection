@@ -189,3 +189,19 @@ pitch::pmpm<double>(const std::vector<double> &audio_buffer, int sample_rate);
 
 template float
 pitch::pmpm<float>(const std::vector<float> &audio_buffer, int sample_rate);
+
+double pitch::mpm(const double * const src, size_t size, int sample_rate)
+{
+
+        std::vector<double> audio_buffer(src, src + size);
+        pitch_alloc::Mpm<double> ma(audio_buffer.size());
+        return ma.pitch(audio_buffer, sample_rate);
+}
+
+double pitch::pmpm(const double * const src, size_t size, int sample_rate)
+{
+
+        std::vector<double> audio_buffer(src, src + size);
+        pitch_alloc::Mpm<double> ma(audio_buffer.size());
+	return ma.probabilistic_pitch(audio_buffer, sample_rate);
+}

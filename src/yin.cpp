@@ -186,3 +186,11 @@ double pitch::yin(const double * const src, size_t size, int sample_rate)
         pitch_alloc::Yin<double> ya(audio_buffer.size());
         return ya.pitch(audio_buffer, sample_rate);
 }
+
+double pitch::pyin(const double * const src, size_t size, int sample_rate)
+{
+
+        std::vector<double> audio_buffer(src, src + size);
+        pitch_alloc::Yin<double> ya(audio_buffer.size());
+	return ya.probabilistic_pitch(audio_buffer, sample_rate);
+}
