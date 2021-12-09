@@ -39,13 +39,19 @@ template <typename T>
 T
 yin(const std::vector<T> &, int);
 
+double yin(const double * const, size_t, int);
+
 template <typename T>
 T
 mpm(const std::vector<T> &, int);
 
+double mpm(const double * const, size_t, int);
+
 template <typename T>
 T
 swipe(const std::vector<T> &, int);
+
+double swipe(const double * const, size_t, int);
 
 /*
  * pyin and pmpm emit pairs of pitch/probability
@@ -54,10 +60,15 @@ template <typename T>
 T
 pyin(const std::vector<T> &, int);
 
+double pyin(const double * const, size_t, int);
+
 template <typename T>
 T
 pmpm(const std::vector<T> &, int);
+
+double pmpm(const double * const, size_t, int);
 } // namespace pitch
+
 
 /*
  * This namespace is useful for repeated calls to pitch for the same size of

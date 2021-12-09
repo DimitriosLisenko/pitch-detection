@@ -1,0 +1,51 @@
+FROM sickcodes/docker-osx:big-sur
+
+USER root
+
+# install brew for package management
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+ENV C_INCLUDE_PATH="/usr/local/include:/home/linuxbrew/.linuxbrew/opt/libomp/include:/home/linuxbrew/.linuxbrew/include:$C_INCLUDE_PATH"
+ENV CPLUS_INCLUDE_PATH="/usr/local/include:/home/linuxbrew/.linuxbrew/opt/libomp/include:/home/linuxbrew/.linuxbrew/include:$CPLUS_INCLUDE_PATH"
+ENV LIBRARY_PATH="/usr/local/lib:/home/linuxbrew/.linuxbrew/opt/libomp/lib:/home/linuxbrew/.linuxbrew/lib:$LIBRARY_PATH"
+ENV LDFLAGS="-L/home/linuxbrew/.linuxbrew/opt/libomp/lib"
+ENV CPPFLAGS="-I/home/linuxbrew/.linuxbrew/opt/libomp/include"
+
+# # install dependencies
+RUN brew install boost cmake doxygen ensmallen graphviz icu4c libomp openblas pkg-config
+
+RUN echo "/home/linuxbrew/.linuxbrew/lib" > /etc/ld.so.conf.d/brew.conf && ldconfig
+
+RUN sed -i 's/"-DALLOW_OPENBLAS_MACOS=ON"/"-DALLOW_OPENBLAS_MACOS=ON", -DARMA_USE_OPENMP/g' \
+    /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/armadillo.rb
+RUN brew install -s armadillo
+
+RUN sed -i 's/DUSE_OPENMP=OFF/DUSE_OPENMP=ON/g' /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/mlpack.rb
+RUN brew install -s mlpack
+
+RUN sed -i 's/"-DBENCHMARK_ENABLE_GTEST_TESTS=OFF"/"-DBENCHMARK_ENABLE_GTEST_TESTS=OFF", "-DCMAKE_POSITION_INDEPENDENT_CODE=ON", "-DCMAKE_EXE_LINKER_FLAGS=-pie"/g' \
+    /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/google-benchmark.rb
+RUN brew install -s google-benchmark
+
+RUN sed -i 's/"cmake", "."/"cmake", ".", "-DCMAKE_POSITION_INDEPENDENT_CODE=ON", "-DCMAKE_EXE_LINKER_FLAGS=-pie"/g' \
+    /home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/googletest.rb
+RUN brew install -s googletest
+
+RUN sudo mkdir -p /usr/local/sources
+RUN sudo mkdir -p /usr/local/build
+WORKDIR /usr/local/build
+
+RUN git clone https://github.com/anthonix/ffts /usr/local/build/ffts \
+&& cd ffts \
+&& mkdir build \
+&& cd build \
+&& cmake .. \
+&& make \
+&& make install
+
+ADD . /usr/local/build/pitch-detection
+RUN cd pitch-detection \
+&& make clean all \
+&& make -C test clean all \
+&& make install

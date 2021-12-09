@@ -482,3 +482,10 @@ pitch::swipe<double>(const std::vector<double> &audio_buffer, int sample_rate);
 
 template float
 pitch::swipe<float>(const std::vector<float> &audio_buffer, int sample_rate);
+
+double pitch::swipe(const double * const src, size_t size, int sample_rate)
+{
+
+        std::vector<double> audio_buffer(src, src + size);
+	return swipe(audio_buffer, sample_rate);
+}

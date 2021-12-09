@@ -178,3 +178,19 @@ pitch::pyin<double>(const std::vector<double> &audio_buffer, int sample_rate);
 
 template float
 pitch::pyin<float>(const std::vector<float> &audio_buffer, int sample_rate);
+
+double pitch::yin(const double * const src, size_t size, int sample_rate)
+{
+
+        std::vector<double> audio_buffer(src, src + size);
+        pitch_alloc::Yin<double> ya(audio_buffer.size());
+        return ya.pitch(audio_buffer, sample_rate);
+}
+
+double pitch::pyin(const double * const src, size_t size, int sample_rate)
+{
+
+        std::vector<double> audio_buffer(src, src + size);
+        pitch_alloc::Yin<double> ya(audio_buffer.size());
+	return ya.probabilistic_pitch(audio_buffer, sample_rate);
+}
